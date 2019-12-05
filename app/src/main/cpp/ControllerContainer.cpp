@@ -32,12 +32,14 @@ struct ControllerContainer::State {
   GeometryPtr beamModel;
   bool visible = false;
   vrb::Color pointerColor;
+  uint64_t frameId;
 
   void Initialize(vrb::CreationContextPtr& aContext) {
     context = aContext;
     root = Toggle::Create(aContext);
     visible = true;
     pointerColor = vrb::Color(1.0f, 1.0f, 1.0f, 1.0f);
+    frameId = 0;
   }
 
   bool Contains(const int32_t aControllerIndex) {
@@ -342,6 +344,63 @@ ControllerContainer::SetAxes(const int32_t aControllerIndex, const float* aData,
 }
 
 void
+ControllerContainer::SetProfile(const int32_t aControllerIndex, const std::string& aProfile) {
+  if (!m.Contains(aControllerIndex)) {
+    return;
+  }
+
+  m.list[aControllerIndex].profile = aProfile;
+}
+
+void
+ControllerContainer::SetSelectActionStart(const int32_t aControllerIndex) {
+  if (!m.Contains(aControllerIndex)) {
+    return;
+  }
+
+  if (m.list[aControllerIndex].selectActionStopFrameId >=
+      m.list[aControllerIndex].selectActionStartFrameId) {
+    m.list[aControllerIndex].selectActionStartFrameId = m.frameId;
+  }
+}
+
+void
+ControllerContainer::SetSelectActionStop(const int32_t aControllerIndex) {
+  if (!m.Contains(aControllerIndex)) {
+    return;
+  }
+
+  if (m.list[aControllerIndex].selectActionStartFrameId >
+      m.list[aControllerIndex].selectActionStopFrameId) {
+    m.list[aControllerIndex].selectActionStopFrameId = m.frameId;
+  }
+}
+
+void
+ControllerContainer::SetSqueezeActionStart(const int32_t aControllerIndex) {
+  if (!m.Contains(aControllerIndex)) {
+    return;
+  }
+
+  if (m.list[aControllerIndex].squeezeActionStopFrameId >=
+      m.list[aControllerIndex].squeezeActionStartFrameId) {
+    m.list[aControllerIndex].squeezeActionStartFrameId = m.frameId;
+  }
+}
+
+void
+ControllerContainer::SetSqueezeActionStop(const int32_t aControllerIndex) {
+  if (!m.Contains(aControllerIndex)) {
+    return;
+  }
+
+  if (m.list[aControllerIndex].squeezeActionStartFrameId >
+      m.list[aControllerIndex].squeezeActionStopFrameId) {
+    m.list[aControllerIndex].squeezeActionStopFrameId = m.frameId;
+  }
+}
+
+void
 ControllerContainer::SetLeftHanded(const int32_t aControllerIndex, const bool aLeftHanded) {
   if (!m.Contains(aControllerIndex)) {
     return;
@@ -401,6 +460,11 @@ ControllerContainer::SetVisible(const bool aVisible) {
   } else {
     m.root->ToggleAll(false);
   }
+}
+
+void
+ControllerContainer::SetFrameId(const uint64_t aFrameId) {
+  m.frameId = aFrameId;
 }
 
 ControllerContainer::ControllerContainer(State& aState, vrb::CreationContextPtr& aContext) : m(aState) {

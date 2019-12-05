@@ -952,10 +952,12 @@ struct DeviceDelegateOculusVR::State {
             controller->CreateController(controllerState.index, int32_t(controllerState.hand),
                                          controllerName, beamTransform);
             controller->SetButtonCount(controllerState.index, 6);
+            controller->SetProfile(controllerState.index, "oculus-touch-v2");
           } else {
             // Oculus Go only has one kind of controller model.
             controller->CreateController(controllerState.index, 0, "Oculus Go Controller");
             controller->SetButtonCount(controllerState.index, 2);
+            controller->SetProfile(controllerState.index, "oculus-go");
           }
           controllerState.created = true;
         }
@@ -1064,6 +1066,14 @@ struct DeviceDelegateOculusVR::State {
 
         const bool thumbRest = (controllerState.inputState.Touches & ovrTouch_ThumbUp) != 0;
         controller->SetButtonState(controllerState.index, ControllerDelegate::BUTTON_OTHERS, 5, thumbRest, thumbRest);
+
+        if (renderMode == device::RenderMode::Immersive) {
+          if (gripPressed) {
+            controller->SetSqueezeActionStart(controllerState.index);
+          } else {
+            controller->SetSqueezeActionStop(controllerState.index);
+          }
+        }
       } else {
         triggerPressed = (controllerState.inputState.Buttons & ovrButton_A) != 0;
         triggerTouched = triggerPressed;
@@ -1093,6 +1103,14 @@ struct DeviceDelegateOculusVR::State {
       controller->SetButtonState(controllerState.index, ControllerDelegate::BUTTON_TOUCHPAD, 0, trackpadPressed, trackpadTouched);
 
       controller->SetAxes(controllerState.index, axes, kNumAxes);
+
+      if (renderMode == device::RenderMode::Immersive) {
+        if (triggerPressed) {
+          controller->SetSelectActionStart(controllerState.index);
+        } else {
+          controller->SetSelectActionStop(controllerState.index);
+        }
+      }
     }
   }
 

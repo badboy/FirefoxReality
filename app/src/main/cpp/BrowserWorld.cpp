@@ -871,6 +871,8 @@ BrowserWorld::Draw() {
   m.device->ProcessEvents();
   m.context->Update();
   m.externalVR->PullBrowserState();
+  const uint64_t frameId = m.externalVR->GetFrameId();
+  m.controllers->SetFrameId(frameId);
 
   m.CheckExitImmersive();
   if (m.splashAnimation) {

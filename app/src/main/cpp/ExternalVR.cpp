@@ -317,6 +317,11 @@ ExternalVR::SetSourceBrowser(VRBrowserType aBrowser) {
   m.SetSourceBrowser(aBrowser);
 }
 
+uint64_t
+ExternalVR::GetFrameId() const {
+  return m.lastFrameId;
+}
+
 void
 ExternalVR::SetCompositorEnabled(bool aEnabled) {
   if (aEnabled == m.compositorEnabled) {
@@ -430,6 +435,18 @@ ExternalVR::PushFramePoses(const vrb::Matrix& aHeadTransform, const std::vector<
       vrb::Vector position(controller.transformMatrix.GetTranslation());
       memcpy(&(immersiveController.pose.position), position.Data(), sizeof(immersiveController.pose.position));
     }
+
+    immersiveController.targetRayMode = mozilla::gfx::TargetRayMode::TrackedPointer;
+    immersiveController.mappingType = mozilla::gfx::GamepadMappingType ::XRStandard;
+    if (controller.profile.size() > mozilla::gfx::kProfileNameListMaxLen) {
+      VRB_ERROR("controller profile size is over than kProfileNameListMaxLen.");
+      assert(false);
+    }
+    memcpy(&immersiveController.profiles, controller.profile.data(), mozilla::gfx::kProfileNameListMaxLen);
+    immersiveController.selectActionStartFrameId = controller.selectActionStartFrameId;
+    immersiveController.selectActionStopFrameId = controller.selectActionStopFrameId;
+    immersiveController.squeezeActionStartFrameId = controller.squeezeActionStartFrameId;
+    immersiveController.squeezeActionStopFrameId = controller.squeezeActionStopFrameId;
   }
 
   m.system.sensorState.timestamp = aTimestamp;

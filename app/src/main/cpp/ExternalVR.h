@@ -61,6 +61,7 @@ public:
                       device::EyeRect& aRightEye) const;
   void StopPresenting();
   void SetSourceBrowser(VRBrowserType aBrowser);
+  uint64_t GetFrameId() const;
   ExternalVR();
   ~ExternalVR() = default;
 protected:

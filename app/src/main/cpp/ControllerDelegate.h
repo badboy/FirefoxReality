@@ -12,6 +12,7 @@
 #include "GestureDelegate.h"
 
 #include <memory>
+#include <string>
 
 namespace crow {
 
@@ -42,6 +43,11 @@ public:
   virtual void SetButtonCount(const int32_t aControllerIndex, const uint32_t aNumButtons) = 0;
   virtual void SetButtonState(const int32_t aControllerIndex, const Button aWhichButton, const int32_t aImmersiveIndex, const bool aPressed, const bool aTouched, const float aImmersiveTrigger = -1.0f) = 0;
   virtual void SetAxes(const int32_t aControllerIndex, const float* aData, const uint32_t aLength) = 0;
+  virtual void SetProfile(const int32_t aControllerIndex, const std::string& aProfile) = 0;
+  virtual void SetSelectActionStart(const int32_t aControllerIndex) = 0;
+  virtual void SetSelectActionStop(const int32_t aControllerIndex) = 0;
+  virtual void SetSqueezeActionStart(const int32_t aControllerIndex) = 0;
+  virtual void SetSqueezeActionStop(const int32_t aControllerIndex) = 0;
   virtual void SetLeftHanded(const int32_t aControllerIndex, const bool aLeftHanded) = 0;
   virtual void SetTouchPosition(const int32_t aControllerIndex, const float aTouchX, const float aTouchY) = 0;
   virtual void EndTouch(const int32_t aControllerIndex) = 0;

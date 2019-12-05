@@ -10,6 +10,7 @@
 #include "Device.h"
 #include "vrb/Forward.h"
 #include "vrb/Matrix.h"
+#include "moz_external_vr.h"
 
 namespace crow {
 
@@ -55,6 +56,12 @@ struct Controller {
   bool inDeadZone;
   double lastHoverEvent;
   device::CapabilityFlags deviceCapabilities;
+
+  std::string profile;
+  uint64_t selectActionStartFrameId;
+  uint64_t selectActionStopFrameId;
+  uint64_t squeezeActionStartFrameId;
+  uint64_t squeezeActionStopFrameId;
 
   vrb::Vector StartPoint() const;
   vrb::Vector Direction() const;
