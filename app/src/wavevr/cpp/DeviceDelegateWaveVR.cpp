@@ -259,6 +259,7 @@ struct DeviceDelegateWaveVR::State {
     }
     delegate->CreateController(aController.index, aController.is6DoF ? 1 : 0, aController.is6DoF ? "HTC Vive Focus Plus Controller" : "HTC Vive Focus Controller", transform);
     delegate->SetLeftHanded(aController.index, aController.hand == ElbowModel::HandEnum::Left);
+    delegate->SetProfile(aController.index, aController.is6DoF ? "htc-focus-plus" : "htc-focus");
     aController.created = true;
     aController.enabled = false;
   }
@@ -303,7 +304,7 @@ struct DeviceDelegateWaveVR::State {
 
       delegate->SetVisible(controller.index, !WVR_IsInputFocusCapturedBySystem());
 
-      const bool bumperPressed =  (controller.is6DoF) ? WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Trigger)
+      const bool bumperPressed = (controller.is6DoF) ? WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Trigger)
                                   : WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Digital_Trigger);
       const bool touchpadPressed = WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Touchpad);
       const bool touchpadTouched = WVR_GetInputTouchState(controller.type, WVR_InputId_Alias1_Touchpad);
@@ -330,6 +331,21 @@ struct DeviceDelegateWaveVR::State {
           delegate->SetButtonState(controller.index, ControllerDelegate::BUTTON_OTHERS, 2, gripPressed,
                                    gripPressed);
           controller.gripPressedCount = 0;
+        }
+        if (renderMode == device::RenderMode::Immersive) {
+          if (gripPressed) {
+            delegate->SetSqueezeActionStart(controller.index);
+          } else {
+            delegate->SetSqueezeActionStop(controller.index);
+          }
+        }
+      }
+
+      if (renderMode == device::RenderMode::Immersive) {
+        if (bumperPressed) {
+          delegate->SetSelectActionStart(controller.index);
+        } else {
+          delegate->SetSelectActionStop(controller.index);
         }
       }
 
