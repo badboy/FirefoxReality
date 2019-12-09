@@ -21,7 +21,7 @@
 * maven repositories.
 **/
 ext.deps = [:]
-def versions = [:]
+ext.versions = [:]
 // GeckoView versions can be found here:
 // https://maven.mozilla.org/?prefix=maven2/org/mozilla/geckoview/
 versions.gecko_view = "72.0.20191202091209"
