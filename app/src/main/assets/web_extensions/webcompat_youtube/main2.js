@@ -4,7 +4,9 @@ const LOGTAG = '[firefoxreality:webcompat:youtube]';
 const VIDEO_PROJECTION_PARAM = 'mozVideoProjection';
 const YT_SELECTORS = {
   disclaimer: '.yt-alert-message, yt-alert-message',
-  moviePlayer: '#movie_player'
+  player: '#movie_player',
+  largePlayButton: '.ytp-large-play-button',
+  thumbnail: '.ytp-cued-thumbnail-overlay-image'
 };
 const ENABLE_LOGS = true;
 const logDebug = (...args) => ENABLE_LOGS && console.log(LOGTAG, ...args);
@@ -89,20 +91,27 @@ class YoutubeExtension {
     }
 
     overrideClick(event) {
-        if (!this.isWatchingPage() || !this.hasVideoProjection() || document.fullscreenElement) {
+        const player = this.getPlayer();
+        if (!this.isWatchingPage() || !this.hasVideoProjection() || document.fullscreenElement || !player) {
             return; // Only override click in the Youtube watching page for 360 videos.
         }
+        const target = event.target;
+        let valid = target.tagName.toLowerCase() === 'video' ||
+            target === document.querySelector(YT_SELECTORS.thumbnail) ||
+            target === document.querySelector(YT_SELECTORS.largePlayButton) ||
+            target == player;
 
-        if (event.target.closest(YT_SELECTORS.moviePlayer) && !event.target.closest('.ytp-chrome-bottom')) {
-            const player = this.getPlayer();
-            player && player.requestFullscreen();
+        if (valid) {
+            player.playVideo();
+            player.requestFullscreen();
+            event.stopPropagation();
         }
     }
 
     // Runs the callback when the video is ready (has loaded the first frame).
     waitForVideoReady(callback) {
         this.retry("VideoReady", () => {
-            var video = document.getElementsByTagName("video")[0];
+            const video = document.getElementsByTagName("video")[0];
             if (!video) {
                 return false;
             }
@@ -117,7 +126,7 @@ class YoutubeExtension {
 
      // Get's the Youtube player elements which contains the API functions.
     getPlayer() {
-        let player =  document.getElementById('movie_player');
+        let player = document.querySelector(YT_SELECTORS.player);
         if (!player || !player.wrappedJSObject) {
             return null;
         }
@@ -187,4 +196,4 @@ window.addEventListener('load', () => {
 
 window.addEventListener('pushstate', () => youtube.overrideVideoProjection());
 window.addEventListener('popstate', () => youtube.overrideVideoProjection());
-window.addEventListener('click', evt => youtube.overrideClick());
+window.addEventListener('click', event => youtube.overrideClick(event));
