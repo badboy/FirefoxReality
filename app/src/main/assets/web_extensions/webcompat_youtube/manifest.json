@@ -13,10 +13,10 @@
         "main.css"
       ],
       "js": [
-        "main.js"
+        "main2.js"
       ],
       "run_at": "document_start",
-      "all_frames": true
+      "all_frames": false
     }
   ],
   "permissions": ["webRequest", "webRequestBlocking", "*://*.youtube.com/*", "*://*.youtube-nocookie.com/*"],
