@@ -35,6 +35,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.mozilla.gecko.util.ThreadUtils;
 import org.mozilla.geckoview.CrashReporter;
@@ -1556,6 +1557,16 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
     @Override
     public TrayWidget getTray() {
         return mTray;
+    }
+
+    @VisibleForTesting
+    public RootWidget getRootWidget() {
+        return mRootWidget;
+    }
+
+    @VisibleForTesting
+    public Windows getWindows() {
+        return mWindows;
     }
 
     private native void addWidgetNative(int aHandle, WidgetPlacement aPlacement);

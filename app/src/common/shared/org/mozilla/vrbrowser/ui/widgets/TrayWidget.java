@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.mozilla.gecko.util.ThreadUtils;
 import org.mozilla.geckoview.GeckoSession;
@@ -25,7 +26,6 @@ import org.mozilla.vrbrowser.browser.BookmarksStore;
 import org.mozilla.vrbrowser.browser.SessionChangeListener;
 import org.mozilla.vrbrowser.browser.engine.Session;
 import org.mozilla.vrbrowser.browser.engine.SessionStore;
-import org.mozilla.vrbrowser.telemetry.TelemetryWrapper;
 import org.mozilla.vrbrowser.ui.views.UIButton;
 import org.mozilla.vrbrowser.ui.widgets.settings.SettingsWidget;
 
@@ -46,7 +46,7 @@ public class TrayWidget extends UIWidget implements SessionChangeListener, Windo
     private UIButton mHistoryButton;
     private UIButton mTabsButton;
     private AudioEngine mAudio;
-    private int mSettingsDialogHandle = -1;
+    private SettingsWidget mSettingsWidget;
     private boolean mIsLastSessionPrivate;
     private List<TrayListener> mTrayListeners;
     private int mMinPadding;
@@ -100,7 +100,7 @@ public class TrayWidget extends UIWidget implements SessionChangeListener, Windo
             }
 
             toggleSettingsDialog();
-            if (isDialogOpened(mSettingsDialogHandle)) {
+            if (mSettingsWidget.isVisible()) {
                 view.requestFocusFromTouch();
             }
         });
@@ -389,19 +389,18 @@ public class TrayWidget extends UIWidget implements SessionChangeListener, Windo
     }
 
     public void toggleSettingsDialog(SettingsWidget.SettingDialog settingDialog) {
-        UIWidget widget = getChild(mSettingsDialogHandle);
-        if (widget == null) {
-            widget = createChild(SettingsWidget.class, false);
-            mSettingsDialogHandle = widget.getHandle();
+        if (mSettingsWidget == null) {
+            mSettingsWidget = new SettingsWidget(getContext());
         }
 
         if (mAttachedWindow != null) {
-            widget.getPlacement().parentHandle = mAttachedWindow.getHandle();
+            mSettingsWidget.getPlacement().parentHandle = mAttachedWindow.getHandle();
         }
-        if (widget.isVisible()) {
-            widget.hide(REMOVE_WIDGET);
+        if (mSettingsWidget.isVisible()) {
+            mSettingsWidget.hide(REMOVE_WIDGET);
+
         } else {
-            ((SettingsWidget)widget).show(REQUEST_FOCUS, settingDialog);
+            mSettingsWidget.show(REQUEST_FOCUS, settingDialog);
         }
     }
 
@@ -421,14 +420,6 @@ public class TrayWidget extends UIWidget implements SessionChangeListener, Windo
         } else {
             this.hide(UIWidget.KEEP_WIDGET);
         }
-    }
-
-    public boolean isDialogOpened(int aHandle) {
-        UIWidget widget = getChild(aHandle);
-        if (widget != null) {
-            return widget.isVisible();
-        }
-        return false;
     }
 
     public void setAddWindowVisible(boolean aVisible) {
@@ -541,5 +532,10 @@ public class TrayWidget extends UIWidget implements SessionChangeListener, Windo
             mLibraryNotification = null;
         }
         button.setNotificationMode(false);
+    }
+
+    @VisibleForTesting
+    public SettingsWidget getSettingsWidget() {
+        return mSettingsWidget;
     }
 }
