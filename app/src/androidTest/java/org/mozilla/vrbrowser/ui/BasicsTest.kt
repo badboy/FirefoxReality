@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mozilla.vrbrowser.helpers.HomeActivityTestRule
 import org.mozilla.vrbrowser.helpers.clearAppFiles
 import org.mozilla.vrbrowser.ui.robots.tray
+import tools.fastlane.screengrab.Screengrab
 
 /**
  *  Basic UI tests
@@ -54,6 +55,22 @@ class BasicsTest {
     }
 
     /**
+     * Check that the settings panel is closed when clicking on the device back button
+     */
+    @Test
+    fun settingsCloseWithDeviceBackButton() {
+        tray {
+            verifyTrayVisible()
+
+        }.openSettings {
+            verifySettingsVisible()
+
+        }.clickDeviceBack {
+            verifySettingsInvisible()
+        }
+    }
+
+    /**
      * Check that the settings panel is closed when clicking outside the settings panel
      */
     @Test
@@ -86,6 +103,17 @@ class BasicsTest {
 
         }.openNewWindow {
             verifyNumberOfWindows(3)
+        }
+    }
+
+    /**
+     * Take a screenshot
+     */
+    @Test
+    fun grabScreenshot() {
+        tray {
+            Thread.sleep(10000)
+            Screengrab.screenshot("test")
         }
     }
 }

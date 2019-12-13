@@ -52,6 +52,16 @@ class SettingRobot {
             return TrayRobot.Transition()
         }
 
+        @Test
+        fun clickDeviceBack(interact: TrayRobot.() -> Unit): TrayRobot.Transition {
+            device.pressBack()
+
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+            TrayRobot().interact()
+            return TrayRobot.Transition()
+        }
+
     }
 }
 

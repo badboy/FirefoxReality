@@ -509,6 +509,8 @@ dependencies {
     androidTestImplementation deps.atsl.runner
     androidTestImplementation deps.atsl.rules
 
+    androidTestImplementation "tools.fastlane:screengrab:2.0.0"
+
     androidTestUtil deps.atsl.orchestrator
 
     // Daydream
