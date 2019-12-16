@@ -373,10 +373,10 @@ public class Windows implements TrayListener, TopBarWidget.Delegate, TitleBarWid
     }
 
     public void focusWindow(@NonNull WindowWidget aWindow) {
-        if (aWindow != mFocusedWindow) {
+        if (mFocusedWindow != null && aWindow != mFocusedWindow) {
             WindowWidget prev = mFocusedWindow;
             mFocusedWindow = aWindow;
-            if (prev != null && getCurrentWindows().contains(prev)) {
+            if (getCurrentWindows().contains(prev)) {
                 prev.setActiveWindow(false);
                 if (prev.isVisible()) {
                     prev.getTitleBar().setVisible(true);
